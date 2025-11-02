@@ -18,7 +18,7 @@ public class TileManager {
 
     public TileManager(GamePanel gp) {
         this.gp = gp;
-        mapTileNumber = new int[gp.maxScreenCol][gp.maxScreenRow];
+        mapTileNumber = new int[gp.maxWorldCol][gp.maxWorldRow];
         
         setupTiles();
         loadMap("/maps/map.txt"); 
@@ -26,7 +26,7 @@ public class TileManager {
 
     public void setupTiles() {
         // Crea un array con suficiente espacio para tus tiles
-        tiles = new Tile[10];
+        tiles = new Tile[30];
         
         // Índice 0: grass (estático, sin colisión)
         tiles[0] = new Tile("/tiles_sprites/grass.png", false, false);
@@ -39,6 +39,10 @@ public class TileManager {
         
         // Índice 3: stone_brick (estático, con colisión)
         tiles[3] = new Tile("/tiles_sprites/stone_brick.png", true, false);
+
+        tiles[4] = new Tile("/tiles_sprites/forest_grass.png", false, false);
+        tiles[5] = new Tile("/tiles_sprites/forest_flower", false, true);
+        tiles[6] = new Tile("/tiles_sprites/desert.png", false, false);
     }
 
     public void update() {
@@ -60,51 +64,72 @@ public class TileManager {
             int col = 0;
             int row = 0; 
 
-            while (row < gp.maxScreenRow) {
+            while (row < gp.maxWorldRow) {
                 String line = br.readLine();
-                String[] numbers = line.split(" ");
+                if (line == null) break; // Si no hay más líneas, salir
+                
+                String[] numbers = line.trim().split("\\s+"); // trim() quita espacios y \\s+ divide por cualquier espacio
                 
                 col = 0;
-                while (col < gp.maxScreenCol) {
-                    int num = Integer.parseInt(numbers[col]);
-                    mapTileNumber[col][row] = num;
-                    col++;
+                for (int i = 0; i < numbers.length && col < gp.maxWorldCol; i++) {
+                    // Salta strings vacíos
+                    if (numbers[i].isEmpty()) {
+                        continue;
+                    }
+                    try {
+                        int num = Integer.parseInt(numbers[i]);
+                        mapTileNumber[col][row] = num;
+                        col++;
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error parseando número en fila " + row + ", columna " + col + ": '" + numbers[i] + "'");
+                    }
                 }
                 row++;
             }
             br.close();
+            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void draw(Graphics2D g2){
-       int col = 0;
-       int row = 0;
-       int x = 0;
-       int y = 0;
+       int worldCol = 0;
+       int worldRow = 0;
+       int tilesDrawn = 0;
 
-       while (col < gp.maxScreenCol && row < gp.maxScreenRow) {
-              int tileNum = mapTileNumber[col][row];
+       while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
+              int tileNum = mapTileNumber[worldCol][worldRow];
+              int worldX = worldCol * gp.tileSize;
+              int worldY = worldRow * gp.tileSize;
+              int screenX = worldX - gp.player.worldX + gp.player.screenX;
+              int screenY = worldY - gp.player.worldY + gp.player.screenY;
               
-              // Obtiene el tile del array
-              if (tileNum >= 0 && tileNum < tiles.length && tiles[tileNum] != null) {
-                  BufferedImage tileImage = tiles[tileNum].getImage(currentFrame);                  
-                  // Solo dibuja si la imagen no es null
-                  if (tileImage != null) {
-                      g2.drawImage(tileImage, x, y, gp.tileSize, gp.tileSize, null);
+              // Solo dibuja tiles que están en pantalla
+              if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+                  worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
+                  worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+                  worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
+                  
+                  // Obtiene el tile del array
+                  if (tileNum >= 0 && tileNum < tiles.length && tiles[tileNum] != null) {
+                      BufferedImage tileImage = tiles[tileNum].getImage(currentFrame);                  
+                      // Solo dibuja si la imagen no es null
+                      if (tileImage != null) {
+                          g2.drawImage(tileImage, screenX, screenY, gp.tileSize, gp.tileSize, null);
+                          tilesDrawn++;
+                      }
                   }
               }
               
-              col++;
-              x += gp.tileSize;
+              worldCol++;
     
-              if(col == gp.maxScreenCol){
-                col = 0;
-                x = 0;
-                row++;
-                y += gp.tileSize;
+              if(worldCol == gp.maxWorldCol){
+                worldCol = 0;
+                worldRow++;
               }
          }
+         
     }
 }

@@ -6,10 +6,10 @@ import javax.imageio.ImageIO;
 
 public class Entity {
 
-    public int x, y;
+    public int worldX, worldY;
     public int speed;
     public HashMap<String, BufferedImage> frames =  new HashMap<>();
-    public String direction = "down";
+    public String direction;
     public String frameId = "1";
     public int frameCounter = 0;
     public int animationSpeed = 10;
