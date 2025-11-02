@@ -38,7 +38,7 @@ public class Player extends Entity {
 
   public void update() {
     if (keyH.downPressed || keyH.leftPressed || keyH.rightPressed || keyH.upPressed) {
-       if (keyH.upPressed) {
+      if (keyH.upPressed) {
       direction = "up";
       y -= speed;
     } else if (keyH.downPressed) {
@@ -65,6 +65,6 @@ public class Player extends Entity {
     // g2.setColor(Color.white);
     // g2.fillRect(x, y, gp.tileSize, gp.tileSize);
     BufferedImage image = frames.get(direction + frameId);
-    g2.drawImage(image, x, y, 50, 50, null);
+    g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
   }
 }

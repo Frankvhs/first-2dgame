@@ -9,7 +9,7 @@ public class Entity {
     public int x, y;
     public int speed;
     public HashMap<String, BufferedImage> frames =  new HashMap<>();
-    public String direction = "left";
+    public String direction = "down";
     public String frameId = "1";
     public int frameCounter = 0;
     public int animationSpeed = 10;
