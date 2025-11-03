@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
+
 import main.GamePanel;
 
 public class Player extends Entity {
@@ -14,6 +16,10 @@ public class Player extends Entity {
   KeyHandler keyH;
   public final int screenX;
   public final int screenY;
+  int hasKey = 0;
+
+
+
   public Player(GamePanel gp, KeyHandler keyH) {
     this.gp = gp;
     this.keyH = keyH;
@@ -21,9 +27,13 @@ public class Player extends Entity {
     screenX = gp.screenWidth/2 - (gp.tileSize/2);
     screenY = gp.screenHeight/2 - (gp.tileSize/2);
 
-    // Caja de colisión más pequeña: centrada horizontalmente, solo los pies
-    solidArea = new Rectangle(12, 24, 24, 24);
-
+    solidArea = new Rectangle();
+    solidArea.x = 12;
+    solidArea.y = 24;
+    solidAreaDefaultX = solidArea.x;
+    solidAreaDefaultY = solidArea.y;
+    solidArea.width = 24;
+    solidArea.height = 24;
     setDefaultValues();
     getPlayerImage();
   }
@@ -83,6 +93,9 @@ public class Player extends Entity {
         }
       }
 
+      int objIndex = gp.coChecker.checkObject(this, true);
+      pickUpObject(objIndex);
+
       frameCounter++;
       if(frameCounter > animationSpeed){
         frameId = frameId == "1" ? "2" : "1";
@@ -90,6 +103,32 @@ public class Player extends Entity {
       }
     }
    
+  }
+
+  public void pickUpObject(int i){
+
+    if(i != 999){
+      String objectName = gp.obj[i].name;
+
+      switch (objectName) {
+        case "key":
+        hasKey++;
+        gp.obj[i] = null;
+        System.out.println("Key:" + hasKey);
+          break;
+        case "chest":
+        if (hasKey > 0) {
+          try {
+             gp.obj[i].image = ImageIO.read(getClass().getResourceAsStream("/objects/open_chest.png"));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          hasKey--;
+          System.out.println("Key:" + hasKey);
+        }
+          break;
+      }
+    }
   }
 
   public void draw(Graphics2D g2) {

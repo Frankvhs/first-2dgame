@@ -15,6 +15,7 @@ public class Entity {
     public int frameCounter = 0;
     public int animationSpeed = 10;
     public Rectangle solidArea;
+    public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
     
     public BufferedImage readImage (String name, String s) {
