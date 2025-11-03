@@ -10,11 +10,11 @@ import main.GamePanel;
 
 public class TileManager {
     GamePanel gp;
-    Tile[] tiles;
+    public Tile[] tiles;
     public int currentFrame = 0;
     public int frameCounter = 0;
     public int animationSpeed = 10;
-    int mapTileNumber[][];
+    public int mapTileNumber[][];
 
     public TileManager(GamePanel gp) {
         this.gp = gp;
@@ -97,7 +97,6 @@ public class TileManager {
     public void draw(Graphics2D g2){
        int worldCol = 0;
        int worldRow = 0;
-       int tilesDrawn = 0;
 
        while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
               int tileNum = mapTileNumber[worldCol][worldRow];
@@ -118,7 +117,6 @@ public class TileManager {
                       // Solo dibuja si la imagen no es null
                       if (tileImage != null) {
                           g2.drawImage(tileImage, screenX, screenY, gp.tileSize, gp.tileSize, null);
-                          tilesDrawn++;
                       }
                   }
               }

@@ -1,4 +1,5 @@
 package entity;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -13,7 +14,9 @@ public class Entity {
     public String frameId = "1";
     public int frameCounter = 0;
     public int animationSpeed = 10;
-
+    public Rectangle solidArea;
+    public boolean collisionOn = false;
+    
     public BufferedImage readImage (String name, String s) {
         try {
             BufferedImage image = ImageIO.read(getClass().getResourceAsStream(s));

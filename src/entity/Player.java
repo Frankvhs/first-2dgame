@@ -3,6 +3,7 @@ package entity;
 import main.KeyHandler;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import main.GamePanel;
@@ -19,13 +20,17 @@ public class Player extends Entity {
 
     screenX = gp.screenWidth/2 - (gp.tileSize/2);
     screenY = gp.screenHeight/2 - (gp.tileSize/2);
+
+    // Caja de colisión más pequeña: centrada horizontalmente, solo los pies
+    solidArea = new Rectangle(12, 24, 24, 24);
+
     setDefaultValues();
     getPlayerImage();
   }
 
   public void setDefaultValues() {
-    worldX = gp.tileSize * 23;
-    worldY = gp.tileSize * 21;
+    worldX = 100;
+    worldY = 100;
     speed = 4;
     direction = "down";
   }
@@ -43,25 +48,46 @@ public class Player extends Entity {
 
   public void update() {
     if (keyH.downPressed || keyH.leftPressed || keyH.rightPressed || keyH.upPressed) {
+      
+      // Procesa cada dirección independientemente (sin else if)
       if (keyH.upPressed) {
-      direction = "up";
-      worldY -= speed;
-    } else if (keyH.downPressed) {
-      direction = "down";
-      worldY += speed;
-    } else if (keyH.leftPressed) {
-      direction = "left";
-      worldX -= speed;
-    } else if (keyH.rightPressed) {
-      direction = "right";
-      worldX += speed;
-    }
+        direction = "up";
+        collisionOn = false;
+        gp.coChecker.checkTile(this, "up");
+        if(!collisionOn){
+          worldY -= speed;
+        }
+      }
+      if (keyH.downPressed) {
+        direction = "down";
+        collisionOn = false;
+        gp.coChecker.checkTile(this, "down");
+        if(!collisionOn){
+          worldY += speed;
+        }
+      }
+      if (keyH.leftPressed) {
+        direction = "left";
+        collisionOn = false;
+        gp.coChecker.checkTile(this, "left");
+        if(!collisionOn){
+          worldX -= speed;
+        }
+      }
+      if (keyH.rightPressed) {
+        direction = "right";
+        collisionOn = false;
+        gp.coChecker.checkTile(this, "right");
+        if(!collisionOn){
+          worldX += speed;
+        }
+      }
 
-    frameCounter++;
-    if(frameCounter > animationSpeed){
-      frameId = frameId == "1" ? "2" : "1";
-      frameCounter = 0;
-    }
+      frameCounter++;
+      if(frameCounter > animationSpeed){
+        frameId = frameId == "1" ? "2" : "1";
+        frameCounter = 0;
+      }
     }
    
   }
